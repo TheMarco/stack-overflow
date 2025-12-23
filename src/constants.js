@@ -75,13 +75,74 @@ export const TETROMINOES = {
   }
 };
 
+// Advanced mode tetrominoes (includes all classic + new shapes)
+export const ADVANCED_TETROMINOES = {
+  ...TETROMINOES,
+  // Small L (3 blocks) - top row
+  SMALL_L: {
+    shape: [
+      [1, 1],
+      [1, 0]
+    ],
+    color: 0,
+    name: 'SMALL_L'
+  },
+  // Small L mirrored (3 blocks) - top row
+  SMALL_L_MIRROR: {
+    shape: [
+      [1, 1],
+      [0, 1]
+    ],
+    color: 1,
+    name: 'SMALL_L_MIRROR'
+  },
+  // U shape (5 blocks) - middle left
+  U: {
+    shape: [
+      [1, 0, 1],
+      [1, 1, 1]
+    ],
+    color: 2,
+    name: 'U'
+  },
+  // S shape (4 blocks) - middle right
+  S_ADVANCED: {
+    shape: [
+      [0, 1, 1],
+      [1, 1, 0]
+    ],
+    color: 3,
+    name: 'S_ADVANCED'
+  },
+  // 2x2 with extra piece (5 blocks) - bottom left
+  BLOCK_PLUS: {
+    shape: [
+      [1, 1, 1],
+      [1, 1, 0]
+    ],
+    color: 4,
+    name: 'BLOCK_PLUS'
+  },
+  // T with top extended (5 blocks) - bottom right
+  T_EXTENDED: {
+    shape: [
+      [0, 1, 0],
+      [0, 1, 1],
+      [0, 1, 0]
+    ],
+    color: 5,
+    name: 'T_EXTENDED'
+  }
+};
+
 // NES Tetris scoring
 export const SCORES = {
   SINGLE: 40,
   DOUBLE: 100,
   TRIPLE: 300,
   TETRIS: 1200,
-  SOFT_DROP: 1
+  SOFT_DROP: 1,
+  PERFECT_CLEAR: 10000 // Bonus for clearing entire field
 };
 
 // Game speeds (frames per drop) - Higher = slower

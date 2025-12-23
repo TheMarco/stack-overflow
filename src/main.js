@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import GameScene from './scenes/GameScene.js';
 import PreloadScene from './scenes/PreloadScene.js';
+import ModeSelectScene from './scenes/ModeSelectScene.js';
 
 const config = {
   type: Phaser.WEBGL,
@@ -26,7 +27,7 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
     zoom: 3
   },
-  scene: [PreloadScene, GameScene]
+  scene: [PreloadScene, ModeSelectScene, GameScene]
 };
 
 const game = new Phaser.Game(config);

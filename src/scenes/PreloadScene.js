@@ -57,7 +57,7 @@ export default class PreloadScene extends Phaser.Scene {
 
     // Wait for space key to start
     this.input.keyboard.once('keydown-SPACE', () => {
-      this.scene.start('GameScene');
+      this.scene.start('ModeSelectScene');
     });
   }
 }

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import {
   GAME_WIDTH, GAME_HEIGHT, BLOCK_SIZE, GRID_WIDTH, GRID_HEIGHT,
   PLAY_AREA_X, PLAY_AREA_Y, PLAY_AREA_WIDTH, PLAY_AREA_HEIGHT,
-  TETROMINOES, SCORES, LEVEL_SPEEDS, MAX_LEVEL, UI
+  TETROMINOES, ADVANCED_TETROMINOES, SCORES, LEVEL_SPEEDS, MAX_LEVEL, UI
 } from '../constants.js';
 import ColorExtractor from '../utils/ColorExtractor.js';
 import SpriteBlockRenderer from '../utils/SpriteBlockRenderer.js';
@@ -13,6 +13,10 @@ export default class GameScene extends Phaser.Scene {
   constructor() { super({ key: 'GameScene' }); }
 
   create() {
+    // Get game mode from registry (set by ModeSelectScene)
+    this.gameMode = this.registry.get('gameMode') || 'classic';
+    this.tetrominoes = this.gameMode === 'advanced' ? ADVANCED_TETROMINOES : TETROMINOES;
+
     // CRITICAL: Ensure canvas has focus and can receive keyboard events
     this.game.canvas.setAttribute('tabindex', '1');
     this.game.canvas.focus();
@@ -152,7 +156,7 @@ export default class GameScene extends Phaser.Scene {
   createBlockTextures() {
     const enhanced = SpriteBlockRenderer.enhancePalette(this.colorPalette);
     this.colorPalette = enhanced;
-    Object.keys(TETROMINOES).forEach((key, i) => {
+    Object.keys(this.tetrominoes).forEach((key, i) => {
       // Remove old textures if they exist
       if (this.textures.exists(`block-${key}`)) {
         this.textures.remove(`block-${key}`);
@@ -257,8 +261,8 @@ export default class GameScene extends Phaser.Scene {
   }
 
   getRandomPiece() {
-    const keys = Object.keys(TETROMINOES);
-    return JSON.parse(JSON.stringify(TETROMINOES[keys[Math.floor(Math.random() * keys.length)]]));
+    const keys = Object.keys(this.tetrominoes);
+    return JSON.parse(JSON.stringify(this.tetrominoes[keys[Math.floor(Math.random() * keys.length)]]));
   }
 
   spawnPiece() {
@@ -648,6 +652,30 @@ export default class GameScene extends Phaser.Scene {
       case 4: this.score += SCORES.TETRIS * levelMultiplier; break;
     }
 
+    // Check for perfect clear (entire grid is empty)
+    const isPerfectClear = this.grid.every(row => row.every(cell => cell === 0));
+    if (isPerfectClear) {
+      this.score += SCORES.PERFECT_CLEAR * levelMultiplier;
+      // Show perfect clear message
+      const perfectText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'PERFECT CLEAR!', 12);
+      perfectText.setOrigin(0.5);
+      perfectText.setDepth(150);
+      perfectText.setTint(0xFFD700); // Gold color
+
+      // Animate the text
+      this.tweens.add({
+        targets: perfectText,
+        scale: 1.5,
+        alpha: 0,
+        duration: 2000,
+        ease: 'Power2',
+        onComplete: () => perfectText.destroy()
+      });
+
+      // Play special sound
+      SoundGenerator.playLevelUp();
+    }
+
     // Check for level up
     const newLevel = Math.min(MAX_LEVEL, Math.floor(this.lines / CONFIG.LINES_PER_LEVEL) + 1);
     if (newLevel > this.level) {
@@ -929,6 +957,8 @@ export default class GameScene extends Phaser.Scene {
     const restartText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 12, 'PRESS SPACE');
     restartText.setOrigin(0.5).setDepth(101);
 
-    this.input.keyboard.once('keydown-SPACE', () => { this.scene.restart(); });
+    this.input.keyboard.once('keydown-SPACE', () => {
+      this.scene.start('PreloadScene');
+    });
   }
 }
