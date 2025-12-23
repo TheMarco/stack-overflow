@@ -7,6 +7,40 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    // Create loading screen
+    const loadingText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'LOADING...', {
+      fontSize: '16px',
+      color: '#ffffff',
+      fontFamily: 'monospace'
+    }).setOrigin(0.5);
+
+    const progressText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10, '0%', {
+      fontSize: '14px',
+      color: '#ffffff',
+      fontFamily: 'monospace'
+    }).setOrigin(0.5);
+
+    // Progress bar
+    const progressBar = this.add.graphics();
+    const progressBox = this.add.graphics();
+    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillRect(GAME_WIDTH / 2 - 80, GAME_HEIGHT / 2 + 30, 160, 20);
+
+    // Update progress
+    this.load.on('progress', (value) => {
+      progressText.setText(Math.floor(value * 100) + '%');
+      progressBar.clear();
+      progressBar.fillStyle(0xffffff, 1);
+      progressBar.fillRect(GAME_WIDTH / 2 - 78, GAME_HEIGHT / 2 + 32, 156 * value, 16);
+    });
+
+    this.load.on('complete', () => {
+      progressBar.destroy();
+      progressBox.destroy();
+      loadingText.destroy();
+      progressText.destroy();
+    });
+
     // Load title screen
     this.load.image('title', 'assets/title.png');
 
