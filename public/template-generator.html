@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backdrop Template Generator</title>
+    <style>
+        body {
+            margin: 20px;
+            font-family: monospace;
+            background: #222;
+            color: #fff;
+        }
+        canvas {
+            border: 2px solid #fff;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            display: block;
+            margin: 20px 0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tetris Backdrop Template Generator</h1>
+    
+    <div class="info">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Click "Download Template" to save the template image</li>
+            <li>Open the template in your image editor (Photoshop, GIMP, etc.)</li>
+            <li>The <strong style="color: #000;">BLACK area with MAGENTA border</strong> is the play area (80×160 pixels)</li>
+            <li>The play area will be BLACK in-game, so design around it</li>
+            <li>Create your artwork on layers below the template</li>
+            <li>Delete the template layer when done</li>
+            <li>Export as 256×224 PNG</li>
+            <li>Save to <code>public/assets/backdrops/level-X/backdrop.png</code></li>
+        </ol>
+    </div>
+
+    <canvas id="template" width="256" height="224"></canvas>
+    
+    <button onclick="downloadTemplate()">Download Template (BACKDROP-TEMPLATE.png)</button>
+    <button onclick="downloadBlankTemplate()">Download Blank Template (no labels)</button>
+    
+    <div class="info">
+        <h3>Specifications:</h3>
+        <ul>
+            <li><strong>Total Size:</strong> 256 × 224 pixels</li>
+            <li><strong>Play Area Position:</strong> X: 88, Y: 32</li>
+            <li><strong>Play Area Size:</strong> 80 × 160 pixels</li>
+            <li><strong>Grid:</strong> 10 blocks wide × 20 blocks tall</li>
+            <li><strong>Block Size:</strong> 8 × 8 pixels</li>
+        </ul>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('template');
+        const ctx = canvas.getContext('2d');
+
+        function drawTemplate(includeLabels = true) {
+            // Background - light gray
+            ctx.fillStyle = '#CCCCCC';
+            ctx.fillRect(0, 0, 256, 224);
+
+            // Play area - BLACK (as it appears in game)
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(88, 32, 80, 160);
+
+            // Magenta outline to show the boundary clearly
+            ctx.strokeStyle = '#FF00FF';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(88, 32, 80, 160);
+            
+            // Add grid lines in play area (light gray on black)
+            ctx.strokeStyle = '#444444';
+            ctx.lineWidth = 1;
+            // Vertical lines every 8 pixels
+            for (let x = 88; x <= 168; x += 8) {
+                ctx.beginPath();
+                ctx.moveTo(x, 32);
+                ctx.lineTo(x, 192);
+                ctx.stroke();
+            }
+            // Horizontal lines every 8 pixels
+            for (let y = 32; y <= 192; y += 8) {
+                ctx.beginPath();
+                ctx.moveTo(88, y);
+                ctx.lineTo(168, y);
+                ctx.stroke();
+            }
+            
+            if (includeLabels) {
+                // Add labels
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 12px monospace';
+                ctx.fillText('TETRIS BACKDROP TEMPLATE', 30, 15);
+                
+                ctx.font = '10px monospace';
+                ctx.fillText('256 x 224 pixels', 85, 215);
+                
+                // Play area label
+                ctx.fillStyle = '#00FF00';
+                ctx.font = 'bold 10px monospace';
+                ctx.fillText('PLAY AREA', 100, 110);
+                ctx.fillText('(BLACK)', 105, 122);
+                ctx.fillText('80 x 160', 105, 134);
+                
+                // Coordinates
+                ctx.fillStyle = '#000000';
+                ctx.font = '8px monospace';
+                ctx.fillText('(88,32)', 90, 28);
+                ctx.fillText('(168,192)', 130, 200);
+                
+                // UI area labels
+                ctx.fillStyle = '#666666';
+                ctx.font = '8px monospace';
+                ctx.fillText('SCORE/LEVEL', 10, 20);
+                ctx.fillText('AREA', 10, 30);
+                ctx.fillText('NEXT PIECE', 185, 20);
+                ctx.fillText('AREA', 185, 30);
+            }
+            
+            // Corner markers
+            ctx.fillStyle = '#FF0000';
+            const markerSize = 6;
+            ctx.fillRect(88 - markerSize/2, 32 - markerSize/2, markerSize, markerSize);
+            ctx.fillRect(168 - markerSize/2, 32 - markerSize/2, markerSize, markerSize);
+            ctx.fillRect(88 - markerSize/2, 192 - markerSize/2, markerSize, markerSize);
+            ctx.fillRect(168 - markerSize/2, 192 - markerSize/2, markerSize, markerSize);
+        }
+
+        function downloadTemplate() {
+            ctx.clearRect(0, 0, 256, 224);
+            drawTemplate(true);
+            
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'BACKDROP-TEMPLATE.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function downloadBlankTemplate() {
+            ctx.clearRect(0, 0, 256, 224);
+            drawTemplate(false);
+            
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'BACKDROP-TEMPLATE-BLANK.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Draw initial template
+        drawTemplate(true);
+    </script>
+</body>
+</html>
+

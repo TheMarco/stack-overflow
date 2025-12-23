@@ -1,0 +1,170 @@
+import { BLOCK_SIZE } from '../constants.js';
+
+/**
+ * Renders Tetris blocks using sprite sheet with color palettes from backdrops
+ */
+export default class SpriteBlockRenderer {
+  /**
+   * Create a block texture from sprite sheet with palette colors
+   * @param {Phaser.Scene} scene - The Phaser scene
+   * @param {number[]} colorPalette - Array of 7 colors extracted from backdrop
+   * @param {number} level - Current level (1-10) determines which sprite to use
+   * @param {string} key - Texture key to create
+   * @param {number} colorIndex - Which color from palette to use (0-6)
+   */
+  static createBlockTexture(scene, colorPalette, level, key, colorIndex) {
+    // Get the sprite sheet
+    const spriteSheet = scene.textures.get('blocks-spritesheet').getSourceImage();
+    
+    // Create canvas to extract and colorize the sprite
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = BLOCK_SIZE;
+    canvas.height = BLOCK_SIZE;
+    
+    // Extract the 8x8 sprite for this level (level 1 = pixels 0-7, level 2 = 8-15, etc.)
+    const spriteX = (level - 1) * 8;
+    
+    // Draw the sprite section
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCanvas.width = spriteSheet.width;
+    tempCanvas.height = spriteSheet.height;
+    tempCtx.drawImage(spriteSheet, 0, 0);
+    
+    // Get the sprite data
+    const spriteData = tempCtx.getImageData(spriteX, 0, 8, 8);
+    const pixels = spriteData.data;
+    
+    // Get the color to use
+    const color = colorPalette[colorIndex % colorPalette.length];
+    const r = (color >> 16) & 0xFF;
+    const g = (color >> 8) & 0xFF;
+    const b = color & 0xFF;
+    
+    // Colorize: black pixels become the color, white pixels become transparent
+    for (let i = 0; i < pixels.length; i += 4) {
+      const brightness = pixels[i]; // Since it's black/white, just check R channel
+      
+      if (brightness < 128) {
+        // Black pixel - make it the color
+        pixels[i] = r;
+        pixels[i + 1] = g;
+        pixels[i + 2] = b;
+        pixels[i + 3] = 255;
+      } else {
+        // White pixel - make it transparent
+        pixels[i + 3] = 0;
+      }
+    }
+    
+    // Draw the colorized sprite
+    ctx.putImageData(spriteData, 0, 0);
+    
+    // Create texture from canvas
+    scene.textures.addCanvas(key, canvas);
+  }
+
+  /**
+   * Ensure colors are bright and distinct
+   * @param {number[]} palette - Original palette from backdrop
+   * @returns {number[]} Enhanced palette with bright, distinct colors
+   */
+  static enhancePalette(palette) {
+    const enhanced = [];
+    
+    for (let i = 0; i < palette.length; i++) {
+      let color = palette[i];
+      let r = (color >> 16) & 0xFF;
+      let g = (color >> 8) & 0xFF;
+      let b = color & 0xFF;
+      
+      // Calculate brightness
+      const brightness = (r + g + b) / 3;
+      
+      // If too dark, brighten it
+      if (brightness < 100) {
+        const boost = (100 - brightness) / brightness;
+        r = Math.min(255, Math.floor(r * (1 + boost)));
+        g = Math.min(255, Math.floor(g * (1 + boost)));
+        b = Math.min(255, Math.floor(b * (1 + boost)));
+      }
+      
+      // Ensure minimum saturation for visibility
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const saturation = max === 0 ? 0 : (max - min) / max;
+      
+      if (saturation < 0.3) {
+        // Boost the dominant channel
+        if (r >= g && r >= b) r = Math.min(255, r + 50);
+        else if (g >= r && g >= b) g = Math.min(255, g + 50);
+        else b = Math.min(255, b + 50);
+      }
+      
+      enhanced.push((r << 16) | (g << 8) | b);
+    }
+    
+    // Ensure all colors are sufficiently different
+    return this.ensureDistinctColors(enhanced);
+  }
+
+  /**
+   * Ensure colors in palette are distinct from each other
+   * @param {number[]} palette - Color palette
+   * @returns {number[]} Palette with distinct colors
+   */
+  static ensureDistinctColors(palette) {
+    const result = [palette[0]];
+    
+    for (let i = 1; i < palette.length; i++) {
+      let color = palette[i];
+      let attempts = 0;
+      
+      // Check if too similar to existing colors
+      while (attempts < 10) {
+        let tooSimilar = false;
+        
+        for (let j = 0; j < result.length; j++) {
+          if (this.colorDistance(color, result[j]) < 100) {
+            tooSimilar = true;
+            break;
+          }
+        }
+        
+        if (!tooSimilar) break;
+        
+        // Adjust color
+        let r = (color >> 16) & 0xFF;
+        let g = (color >> 8) & 0xFF;
+        let b = color & 0xFF;
+        
+        r = (r + 60) % 256;
+        g = (g + 40) % 256;
+        b = (b + 80) % 256;
+        
+        color = (r << 16) | (g << 8) | b;
+        attempts++;
+      }
+      
+      result.push(color);
+    }
+    
+    return result;
+  }
+
+  /**
+   * Calculate color distance
+   */
+  static colorDistance(c1, c2) {
+    const r1 = (c1 >> 16) & 0xFF;
+    const g1 = (c1 >> 8) & 0xFF;
+    const b1 = c1 & 0xFF;
+    const r2 = (c2 >> 16) & 0xFF;
+    const g2 = (c2 >> 8) & 0xFF;
+    const b2 = c2 & 0xFF;
+    
+    return Math.sqrt((r1-r2)**2 + (g1-g2)**2 + (b1-b2)**2);
+  }
+}
+
