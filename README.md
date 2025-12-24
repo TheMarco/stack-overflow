@@ -23,10 +23,10 @@ A stunning retro-styled Tetris game with authentic CRT TV aesthetics, dynamic ba
 - **Sprite-Based Blocks** - Detailed block rendering with depth and shading
 - **Smooth Animations** - Crush animations, level transitions, and particle effects
 
-### 🎵 Procedural Music System
-- **10 Unique Tracks** - Each level has its own procedurally generated music
-- **Dynamic Composition** - Music adapts to the level's visual theme
-- **Retro Sound Effects** - Authentic 8-bit style sound generation
+### 🎵 Dynamic Music System
+- **10 Unique Tracks** - Each level has its own AI-generated music track created with Suno AI
+- **Thematic Soundscapes** - Music complements each level's visual theme
+- **Retro Sound Effects** - Authentic 8-bit style procedurally generated sound effects
 
 ### 🎯 Two Game Modes
 1. **Classic Mode** - Traditional Tetris with 7 standard pieces (I, O, T, S, Z, J, L)
@@ -107,7 +107,7 @@ The built files will be in the `dist` directory.
 - **Custom Shaders** - GLSL fragment shaders for CRT effects
 - **Color Extraction System** - Automatic palette generation from backdrop images
 - **Sprite Rendering Pipeline** - Dynamic block colorization and rendering
-- **Procedural Audio** - Real-time sound effect generation
+- **Procedural Sound Effects** - Real-time sound effect generation
 
 ### Performance
 - 60 FPS target frame rate
@@ -192,12 +192,21 @@ This project is open source and available under the MIT License.
 
 ## 👨‍💻 Credits
 
-Created by Marco van Hylckama Vlieg
+**Created by Marco van Hylckama Vlieg**
 - Website: [ai-created.com](https://ai-created.com)
 - Twitter/X: [@AIandDesign](https://x.com/AIandDesign)
+
+### Tools & Technologies
+- **Code**: Written with [Augment Code](https://www.augmentcode.com/) (Claude 4.5 Sonnet / Opus)
+- **Music**: AI-generated with [Suno AI](https://suno.ai/)
+- **Graphics**: Created on [Freepik](https://www.freepik.com/) and post-processed in Adobe Photoshop
+- **Game Framework**: [Phaser 3](https://phaser.io/)
 
 ## 🙏 Acknowledgments
 
 - Phaser 3 framework and community
+- Suno AI for music generation capabilities
+- Freepik for graphic design tools
+- Augment Code for AI-assisted development
 - Retro gaming aesthetics and CRT shader techniques
 - Classic Tetris gameplay mechanics
