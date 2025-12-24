@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { MAX_LEVEL, GAME_WIDTH, GAME_HEIGHT } from '../constants.js';
+import { MAX_LEVEL, GAME_WIDTH, GAME_HEIGHT, BORDER_OFFSET } from '../constants.js';
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -8,13 +8,13 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload() {
     // Create loading screen
-    const loadingText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 'LOADING...', {
+    const loadingText = this.add.text(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2 - 20, 'LOADING...', {
       fontSize: '16px',
       color: '#ffffff',
       fontFamily: 'monospace'
     }).setOrigin(0.5);
 
-    const progressText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10, '0%', {
+    const progressText = this.add.text(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2 + 10, '0%', {
       fontSize: '14px',
       color: '#ffffff',
       fontFamily: 'monospace'
@@ -24,14 +24,14 @@ export default class PreloadScene extends Phaser.Scene {
     const progressBar = this.add.graphics();
     const progressBox = this.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);
-    progressBox.fillRect(GAME_WIDTH / 2 - 80, GAME_HEIGHT / 2 + 30, 160, 20);
+    progressBox.fillRect(GAME_WIDTH / 2 + BORDER_OFFSET - 80, GAME_HEIGHT / 2 + 30, 160, 20);
 
     // Update progress
     this.load.on('progress', (value) => {
       progressText.setText(Math.floor(value * 100) + '%');
       progressBar.clear();
       progressBar.fillStyle(0xffffff, 1);
-      progressBar.fillRect(GAME_WIDTH / 2 - 78, GAME_HEIGHT / 2 + 32, 156 * value, 16);
+      progressBar.fillRect(GAME_WIDTH / 2 + BORDER_OFFSET - 78, GAME_HEIGHT / 2 + 32, 156 * value, 16);
     });
 
     this.load.on('complete', () => {
@@ -43,6 +43,9 @@ export default class PreloadScene extends Phaser.Scene {
 
     // Load title screen
     this.load.image('title', 'assets/title.png');
+
+    // Load game over screen
+    this.load.image('game-over', 'assets/game-over.png');
 
     // Load block sprite sheet (grayscale with depth)
     this.load.image('blocks-spritesheet', 'assets/blocks-sprite.png');
@@ -65,13 +68,13 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    // Title image fills entire screen (256x224)
-    const titleImage = this.add.image(0, 0, 'title');
+    // Title image fills entire screen (256x224), offset by border
+    const titleImage = this.add.image(BORDER_OFFSET, 0, 'title');
     titleImage.setOrigin(0, 0);
     titleImage.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     // "Press space to start" text - positioned in bottom third
-    const startText = this.add.bitmapText(GAME_WIDTH / 2, GAME_HEIGHT * 0.7 + 20, 'pixel-font', 'PRESS SPACE TO START', 10).setOrigin(0.5);
+    const startText = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT * 0.7 + 20, 'pixel-font', 'PRESS SPACE TO START', 10).setOrigin(0.5);
     startText.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     startText.setDepth(10);
 
@@ -85,7 +88,7 @@ export default class PreloadScene extends Phaser.Scene {
     });
 
     // Credits text - positioned below start text in bottom third
-    const creditsText = this.add.bitmapText(GAME_WIDTH / 2, GAME_HEIGHT * 0.8 + 20, 'pixel-font', 'BY MARCO VAN HYLCKAMA VLIEG', 10).setOrigin(0.5);
+    const creditsText = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT * 0.8 + 20, 'pixel-font', 'BY MARCO VAN HYLCKAMA VLIEG', 10).setOrigin(0.5);
     creditsText.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     creditsText.setDepth(10);
 

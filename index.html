@@ -14,6 +14,7 @@
             padding: 0;
             background: #000;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -28,13 +29,14 @@
         }
         #game-container {
             position: absolute;
-            /* Screen area inside the TV frame - maintaining 256:224 aspect ratio */
+            /* Screen area inside the TV frame - 298x224 canvas (256 + 42px borders) */
             /* Scaled up by 1.25x (1000/800) to match TV frame increase */
-            width: 636.25px; /* 509 * 1.25 */
-            height: 556.25px; /* 445 * 1.25 */
-            /* Scaled positions by 1.25x */
-            left: 182.5px; /* 146 * 1.25 */
-            top: 73.75px; /* 75.75 - 2 */
+            /* 298 * 2.485 = 740.73px width */
+            width: 741px;
+            height: 556.25px;
+            /* Move 6px left from center: (1000 - 741) / 2 = 129.5, then 129.5 - 6 = 123.5 */
+            left: 118px;
+            top: 73.75px;
         }
         #game-container canvas {
             image-rendering: -moz-crisp-edges;
@@ -44,11 +46,28 @@
             width: 100% !important;
             height: 100% !important;
         }
+        #credits {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #eeeeee;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #credits a {
+            color: #eeeeee;
+            text-decoration: none;
+        }
+        #credits a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div id="tv-frame">
         <div id="game-container"></div>
+    </div>
+    <div id="credits">
+        Created by Marco van Hylckama Vlieg - <a href="https://ai-created.com" target="_blank">ai-created.com</a> - <a href="https://x.com/AIandDesign" target="_blank">x.com/AIandDesign</a>
     </div>
     <script type="module" src="/src/main.js"></script>
 </body>

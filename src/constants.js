@@ -1,6 +1,7 @@
 // Game dimensions
 export const GAME_WIDTH = 256;
 export const GAME_HEIGHT = 224;
+export const BORDER_OFFSET = 21; // Offset for 21px borders on each side
 
 // Bitmap font character set
 export const BITMAP_FONT_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -11,7 +12,7 @@ export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 20;
 export const PLAY_AREA_WIDTH = GRID_WIDTH * BLOCK_SIZE; // 80 pixels
 export const PLAY_AREA_HEIGHT = GRID_HEIGHT * BLOCK_SIZE; // 160 pixels
-export const PLAY_AREA_X = 80; // Centered with room for UI
+export const PLAY_AREA_X = 80 + BORDER_OFFSET; // Centered with room for UI + border offset
 export const PLAY_AREA_Y = 28; // Room for header (moved up 20 pixels from original 48)
 
 // Level progression

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../constants.js';
+import { GAME_WIDTH, GAME_HEIGHT, BORDER_OFFSET } from '../constants.js';
 import SoundGenerator from '../utils/SoundGenerator.js';
 
 export default class ModeSelectScene extends Phaser.Scene {
@@ -9,36 +9,36 @@ export default class ModeSelectScene extends Phaser.Scene {
 
   create() {
     // Use the title backdrop
-    const titleImage = this.add.image(0, 0, 'title');
+    const titleImage = this.add.image(BORDER_OFFSET, 0, 'title');
     titleImage.setOrigin(0, 0);
     titleImage.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     // Dim the background by 50%
-    const dimOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5);
+    const dimOverlay = this.add.rectangle(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5);
     dimOverlay.setDepth(5);
 
     // Title
-    const titleText = this.add.bitmapText(GAME_WIDTH / 2, 60, 'pixel-font', 'MODE SELECT', 10).setOrigin(0.5);
+    const titleText = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 60, 'pixel-font', 'MODE SELECT', 10).setOrigin(0.5);
     titleText.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     titleText.setDepth(10);
 
     // Classic mode option
-    this.classicText = this.add.bitmapText(GAME_WIDTH / 2, 100, 'pixel-font', '> CLASSIC', 10).setOrigin(0.5);
+    this.classicText = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 100, 'pixel-font', '> CLASSIC', 10).setOrigin(0.5);
     this.classicText.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.classicText.setDepth(10);
     this.classicText.setInteractive({ useHandCursor: true });
 
-    const classicDesc = this.add.bitmapText(GAME_WIDTH / 2, 115, 'pixel-font', '7 STANDARD PIECES', 10).setOrigin(0.5);
+    const classicDesc = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 115, 'pixel-font', '7 STANDARD PIECES', 10).setOrigin(0.5);
     classicDesc.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     classicDesc.setDepth(10);
 
     // Advanced mode option
-    this.advancedText = this.add.bitmapText(GAME_WIDTH / 2, 145, 'pixel-font', '  ADVANCED', 10).setOrigin(0.5);
+    this.advancedText = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 145, 'pixel-font', '  ADVANCED', 10).setOrigin(0.5);
     this.advancedText.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.advancedText.setDepth(10);
     this.advancedText.setInteractive({ useHandCursor: true });
 
-    const advancedDesc = this.add.bitmapText(GAME_WIDTH / 2, 160, 'pixel-font', 'EXTRA UNIQUE PIECES', 10).setOrigin(0.5);
+    const advancedDesc = this.add.bitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 160, 'pixel-font', 'EXTRA UNIQUE PIECES', 10).setOrigin(0.5);
     advancedDesc.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     advancedDesc.setDepth(10);
 

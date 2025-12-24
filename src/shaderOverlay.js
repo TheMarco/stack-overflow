@@ -22,6 +22,11 @@ varying vec2 v_texCoord;
 
 #define PI 3.14159265359
 
+// Random noise function for static
+float random(vec2 co) {
+  return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void main() {
   vec2 uv = v_texCoord;
 
@@ -41,6 +46,16 @@ void main() {
   }
 
   vec3 color = texture2D(u_texture, curvedUV).rgb;
+
+  // Add static noise - using larger blocks for grainier effect
+  // Divide by 4.0 to make static "pixels" 4x4 screen pixels
+  vec2 staticCoord = floor(gl_FragCoord.xy / 4.0);
+  float staticNoise = random(staticCoord + vec2(u_time * 100.0)) * 0.06; // Slightly lower intensity
+  color += vec3(staticNoise);
+
+  // Add flicker (brightness variation over time) - multiple frequencies for realism
+  float flicker = sin(u_time * 12.0) * 0.015 + sin(u_time * 5.7) * 0.0125 + sin(u_time * 23.3) * 0.0075;
+  color *= (1.0 + flicker);
 
   // 480i scanline effect - simulating classic CRT TV
   float scanline = gl_FragCoord.y;
@@ -169,6 +184,7 @@ export function createShaderOverlay(gameCanvas) {
 
   const resolutionLoc = gl.getUniformLocation(program, 'u_resolution');
   const timeLoc = gl.getUniformLocation(program, 'u_time');
+  const borderWidthLoc = gl.getUniformLocation(program, 'u_borderWidth');
 
   // Render loop
   function render() {

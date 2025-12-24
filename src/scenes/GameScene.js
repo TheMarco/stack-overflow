@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import {
   GAME_WIDTH, GAME_HEIGHT, BLOCK_SIZE, GRID_WIDTH, GRID_HEIGHT,
   PLAY_AREA_X, PLAY_AREA_Y, PLAY_AREA_WIDTH, PLAY_AREA_HEIGHT,
-  TETROMINOES, ADVANCED_TETROMINOES, SCORES, LEVEL_SPEEDS, MAX_LEVEL, UI
+  TETROMINOES, ADVANCED_TETROMINOES, SCORES, LEVEL_SPEEDS, MAX_LEVEL, UI, BORDER_OFFSET
 } from '../constants.js';
 import ColorExtractor from '../utils/ColorExtractor.js';
 import SpriteBlockRenderer from '../utils/SpriteBlockRenderer.js';
@@ -38,7 +38,7 @@ export default class GameScene extends Phaser.Scene {
     this.game.canvas.addEventListener('blur', () => {
       console.log('Canvas lost focus!');
       if (!this.focusWarning) {
-        this.focusWarning = this.add.text(GAME_WIDTH / 2, 10, 'CLICK TO FOCUS', {
+        this.focusWarning = this.add.text(GAME_WIDTH / 2 + BORDER_OFFSET, 10, 'CLICK TO FOCUS', {
           fontSize: '8px',
           color: '#ff0000',
           backgroundColor: '#000000'
@@ -88,7 +88,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.currentMusic) this.currentMusic.stop();
     const backdropKey = `backdrop-${level}`;
     if (this.backdrop) this.backdrop.destroy();
-    this.backdrop = this.add.image(0, 0, backdropKey).setOrigin(0, 0);
+    this.backdrop = this.add.image(BORDER_OFFSET, 0, backdropKey).setOrigin(0, 0);
     this.backdrop.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
     this.backdrop.setDepth(-1);
     this.colorPalette = ColorExtractor.extractPalette(this, backdropKey);
@@ -293,11 +293,11 @@ export default class GameScene extends Phaser.Scene {
   togglePause() {
     this.paused = !this.paused;
     if (this.paused) {
-      this.pauseOverlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8);
+      this.pauseOverlay = this.add.rectangle(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8);
       this.pauseOverlay.setDepth(100);
-      this.pauseText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'PAUSED');
+      this.pauseText = this.createBitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2, 'PAUSED');
       this.pauseText.setOrigin(0.5).setDepth(101);
-      this.pauseHintText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 12, 'PRESS P');
+      this.pauseHintText = this.createBitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2 + 12, 'PRESS P');
       this.pauseHintText.setOrigin(0.5).setDepth(101);
       if (this.currentMusic) this.currentMusic.pause();
     } else {
@@ -657,7 +657,7 @@ export default class GameScene extends Phaser.Scene {
     if (isPerfectClear) {
       this.score += SCORES.PERFECT_CLEAR * levelMultiplier;
       // Show perfect clear message
-      const perfectText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'PERFECT CLEAR!', 12);
+      const perfectText = this.createBitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2, 'PERFECT CLEAR!', 12);
       perfectText.setOrigin(0.5);
       perfectText.setDepth(150);
       perfectText.setTint(0xFFD700); // Gold color
@@ -699,7 +699,7 @@ export default class GameScene extends Phaser.Scene {
     this.clearing = true;
 
     // Black screen overlay
-    const blackScreen = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000);
+    const blackScreen = this.add.rectangle(GAME_WIDTH / 2 + BORDER_OFFSET, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000);
     blackScreen.setDepth(200);
     blackScreen.setAlpha(0);
 
@@ -716,20 +716,20 @@ export default class GameScene extends Phaser.Scene {
         const newPalette = SpriteBlockRenderer.enhancePalette(rawPalette);
 
         // Level up text
-        const levelText = this.createBitmapText(GAME_WIDTH / 2, 60, `LEVEL ${newLevel}`, 20);
+        const levelText = this.createBitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 60, `LEVEL ${newLevel}`, 20);
         levelText.setOrigin(0.5);
         levelText.setDepth(201);
         levelText.setAlpha(0);
 
         // Subtitle
-        const subtitle = this.createBitmapText(GAME_WIDTH / 2, 85, 'SPEED INCREASED', 10);
+        const subtitle = this.createBitmapText(GAME_WIDTH / 2 + BORDER_OFFSET, 85, 'SPEED INCREASED', 10);
         subtitle.setOrigin(0.5);
         subtitle.setDepth(201);
         subtitle.setAlpha(0);
 
         // Create preview blocks showing new level's style
         const previewBlocks = [];
-        const startX = GAME_WIDTH / 2 - 32; // Center 8 blocks (8*8 = 64px wide)
+        const startX = GAME_WIDTH / 2 + BORDER_OFFSET - 32; // Center 8 blocks (8*8 = 64px wide)
         const startY = 120;
 
         for (let i = 0; i < 7; i++) {
@@ -947,15 +947,12 @@ export default class GameScene extends Phaser.Scene {
     if (this.currentMusic) this.currentMusic.stop();
     SoundGenerator.playGameOver();
 
-    // Black screen overlay
-    const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000);
-    overlay.setDepth(100);
-
-    const gameOverText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'GAME OVER');
-    gameOverText.setOrigin(0.5).setDepth(101);
-
-    const restartText = this.createBitmapText(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 12, 'PRESS SPACE');
-    restartText.setOrigin(0.5).setDepth(101);
+    // Display game over image (256x224, fills the game area)
+    const gameOverImage = this.add.image(BORDER_OFFSET, 0, 'game-over');
+    gameOverImage.setOrigin(0, 0);
+    gameOverImage.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    gameOverImage.setDepth(100);
+    gameOverImage.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     this.input.keyboard.once('keydown-SPACE', () => {
       this.scene.start('PreloadScene');

@@ -6,10 +6,10 @@ import { createShaderOverlay } from './shaderOverlay.js';
 
 const config = {
   type: Phaser.WEBGL,
-  width: 256,
+  width: 298, // 256 + 21px borders on each side (42px total)
   height: 224,
   parent: 'game-container',
-  backgroundColor: '#000000',
+  backgroundColor: '#0a0a0a', // Dark grey for the borders
   pixelArt: true,
   roundPixels: true,
   antialias: false,
@@ -25,7 +25,7 @@ const config = {
   },
   scale: {
     mode: Phaser.Scale.NONE,
-    width: 256,
+    width: 298,
     height: 224
   },
   scene: [PreloadScene, ModeSelectScene, GameScene]
